@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const Blog = require('../../models/Blog');
-const User = require('../../models/User');
+const Blog = require('../models/Blog');
+const User = require('../models/User');
 
 router.route('/')
     .get((req, res) => {
@@ -23,30 +23,7 @@ router.route('/')
             })
             .then(blog => {
                 dbUser.blogs.push(blog);
-                dbUser.save().then(() => res.status(200).json(blog))
-            })
-    })
-
-router.route('/:id')
-    .get((req, res) => {
-        Blog
-            .findById(req.params.id)
-            .then(blog => {
-                res.status(200).json(blog);
-            })
-    })
-    .put((req, res) => {
-        Blog
-            .findByIdAndUpdate(req.params.id, req.body, { new: true})
-            .then(updatedBlog => {
-                res.status(200).json(updatedBlog)
-            })
-    })
-    .delete((req, res) => {
-        Blog
-            .findByIdAndRemove(req.params.id)
-            .then(deletedBlog => {
-                res.status(200).json(deletedBlog)
+                dbUser.save().then(() => res.status(201).json(blog))
             })
     })
 
@@ -57,6 +34,31 @@ router.route('/featured')
             .then(blogs => {
                 res.status(200).json(blogs)
             })
+})
+
+router.route('/:id')
+    .get((req, res) => {
+        Blog
+            .findById(req.params.id)
+            .then(blog => {
+                if (!blog) return res.status(404).send('Sorry no blog was found using that search criteria');
+                res.status(200).json(blog);
+            })
     })
+    .put((req, res) => {
+        Blog
+            .findByIdAndUpdate(req.params.id, req.body, { new: true})
+            .then(updatedBlog => {
+                res.status(204).json(updatedBlog)
+            })
+    })
+    .delete((req, res) => {
+        Blog
+            .findByIdAndRemove(req.params.id)
+            .then(deletedBlog => {
+                res.status(200).json(deletedBlog)
+            })
+    })
+
 
 module.exports = router;

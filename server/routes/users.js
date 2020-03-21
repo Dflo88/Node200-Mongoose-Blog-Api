@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const User = require('../../models/User');
+const User = require('../models/User');
 
 router.route('/')
     .get((req,res) => {
@@ -14,7 +14,7 @@ router.route('/')
         User
                 const newUser = new User(req.body);
                 newUser.save()
-                res.status(200).json(newUser)
+                res.status(201).json(newUser)
     })
     
 router.route('/:id')
@@ -22,6 +22,7 @@ router.route('/:id')
         User
             .findById(req.params.id)
             .then(users => {
+                if (!users) return res.status(404).send('Sorry no user was found using that search criteria');
                 res.status(200).json(users)
             });
     })
@@ -29,7 +30,7 @@ router.route('/:id')
         User
             .findByIdAndUpdate(req.params.id, req.body, { new: true} )
             .then(updatedUser => {
-                res.status(200).json(updatedUser)
+                res.status(204).json(updatedUser)
             })
     })
     .delete((req, res) => {
